@@ -1,5 +1,6 @@
 (ns implementation.util.fim-exceptions
   (:require [midje.util.exceptions :refer :all]
+            [midje.checking.captured-throwable :as ct]
             [midje
              [sweet :refer :all]
              [test-util :refer :all]]
@@ -10,11 +11,11 @@
 (defrecord R [a])
 
 (fact "captured throwables can be recognized"
-  (captured-throwable? (captured-throwable (Throwable.))) => truthy
+  (ct/captured-throwable? (ct/captured-throwable (Throwable.))) => truthy
   "and are not fooled by maps or records"
-  (captured-throwable? {}) => falsey
-  (captured-throwable? (sorted-map :a 3)) => falsey
-  (captured-throwable? (R. 1)) => falsey)
+  (ct/captured-throwable? {}) => falsey
+  (ct/captured-throwable? (sorted-map :a 3)) => falsey
+  (ct/captured-throwable? (R. 1)) => falsey)
 
 ;;;;;;
 

@@ -4,15 +4,16 @@
   (:require [clojure.java.io :as io]
             [commons.clojure.core :refer :all :exclude [any?]]
             [midje.checking.facts :as fact-checking]
-            [midje.util.exceptions :as exceptions]
             [midje.config :as config]
             [midje.data.compendium :as compendium]
             [midje.data.fact :as fact-data]
             [midje.data.project-state :as project-state]
             [midje.doc :as doc]
             [midje.emission.api :as emit]
+            [midje.emission.errors :as emission.errors]
             [midje.emission.boundaries :as emission-boundary]
             [midje.emission.colorize :as color]
+            [midje.emission.protocol.error-emitter :as protocol.error-emitter]
             [midje.parsing.other.arglists :as parsing]
             midje.sweet
             [midje.util.ecosystem :as ecosystem]
@@ -388,7 +389,7 @@
 
 (defn- on-require-failure [the-ns throwable]
   (println (color/fail "LOAD FAILURE for " the-ns))
-  (println (exceptions/format-exception throwable))
+  (println (protocol.error-emitter/load-failure emission.errors/error-emitter throwable))
   (emit/fail-silently) ; to make sure last line shows a failure.
   (when (config/running-in-repl?)
     (when (re-find #"ould not locate.*classpath" (.getMessage throwable))

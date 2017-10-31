@@ -48,8 +48,8 @@
 
 (def config-files
   (keep identity
-        [(if (has-home-config-file?)    home-config-file-name)
-         (if (has-project-config-file?) project-config-file-name)]))
+        [(when (has-home-config-file?)    home-config-file-name)
+         (when (has-project-config-file?) project-config-file-name)]))
 
 (defn set-config-files! [files]
   (alter-var-root #'config-files (constantly files)))
@@ -73,6 +73,7 @@
   ;; Note that the order is guaranteed: test paths come before project paths.
   (alter-var-root #'leiningen-paths-var
                   (constantly (concat (:test-paths project) (:source-paths project)))))
+
 (defmacro #^:private defproject [name version & {:as args}]
   `(set-leiningen-paths! (merge {:test-paths ["test"] :source-paths ["src"]} '~args)))
 

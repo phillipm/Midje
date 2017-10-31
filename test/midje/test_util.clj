@@ -3,6 +3,7 @@
             [midje.checkers :refer :all]
             [midje.checking.core :refer :all]
             [midje.util.exceptions :refer :all]
+            [midje.checking.captured-throwable :as captured-throwable]
             [midje.config :as config]
             [clojure.string :as str]
             [midje.emission.api :as emit]
@@ -103,7 +104,7 @@
   "Note: this is used for testing runtime capturing, not parse-time"
   [rhs]
   (fn [actual-failure]
-    (extended-= (captured-message (:actual actual-failure)) rhs)))
+    (extended-= (captured-throwable/captured-message (:actual actual-failure)) rhs)))
 
 (defn fact-described-as [& things]
   (fn [actual-failure]

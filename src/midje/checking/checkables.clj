@@ -8,7 +8,7 @@
             [midje.emission.api :as emit]
             [midje.emission.boundaries :as emission-boundary]
             [midje.parsing.1-to-explicit-form.parse-background :as parse-background]
-            [midje.util.exceptions :refer [captured-throwable]]
+            [midje.checking.captured-throwable :refer [captured-throwable]]
             [midje.util.laziness :refer :all]
             [such.sequences :as seq]))
 

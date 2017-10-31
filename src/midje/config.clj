@@ -5,6 +5,7 @@
             [midje.util.exceptions :refer [user-error]]
             [midje.util.pile :as pile]
             [midje.data.fact :as fact]
+            [midje.emission.plugins.pretty-error-emitter :as pretty-error-emitter]
             [commons.clojure.core :as core]
             [such.function-makers :as mkfn]))
 
@@ -34,6 +35,7 @@
             :check-after-creation true
             :run-clojure-test true
             :emitter 'midje.emission.plugins.default
+            :error-emitter pretty-error-emitter/error-emitter
             :check-recorder (fn [checkable-map prerequisite-maps])
             :fact-filter (constantly true)})
 
@@ -131,4 +133,3 @@
 
 (defn load-config-files []
   (dorun (map load-file ecosystem/config-files)))
-

@@ -5,8 +5,7 @@
             [midje.checking.core :refer :all]
             [midje.checking.checkers.defining :refer [as-checker checker defchecker]]
             [midje.checking.checkers.util :refer [named-as-call]]
-            [midje.util.exceptions :refer [captured-throwable?]])
-  (:import [midje.util.exceptions ICapturedThrowable]))
+            [midje.checking.captured-throwable :refer [captured-throwable?]]))
 
 ;;; DANGER: If you add a checker, add it to ../checkers.clj
 
@@ -81,7 +80,7 @@
        (fact (foo) => (throws #\"one part\" #\"another part\"))"
     [& desiderata]
     (checker [wrapped-throwable]
-     (if-not (instance? ICapturedThrowable wrapped-throwable)
+     (if-not (captured-throwable? wrapped-throwable)
        false
        (let [throwable (.throwable wrapped-throwable)
              evaluations (map (partial throwable-as-desired? throwable)

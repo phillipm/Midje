@@ -7,6 +7,7 @@
             [midje.emission.clojure-test-facade :as ctf]
             [midje.emission.colorize :as color]
             [midje.util.exceptions :as exception]
+            [midje.checking.captured-throwable :as ct]
             [midje.config :as config]
             [midje.util.ordered-map :as om]
             [midje.util.ordered-set :as os]))
@@ -141,10 +142,10 @@
         : maps and sets sorted by key."
   [value]
   (branch-on value
-    fn?                           (function-name value)
-    exception/captured-throwable? (exception/friendly-stacktrace value)
-    record?                       (str (sorted-if-appropriate value) "::" (record-name value))
-    :else                         (pr-str (sorted-if-appropriate value))))
+    fn?                    (function-name value)
+    ct/captured-throwable? (ct/friendly-stacktrace value)
+    record?                (str (sorted-if-appropriate value) "::" (record-name value))
+    :else                  (pr-str (sorted-if-appropriate value))))
 
 (defn format-nested-descriptions
   "Takes vector like [\"about cars\" nil \"sports cars are fast\"] and returns non-nils joined with -'s
