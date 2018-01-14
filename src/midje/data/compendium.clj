@@ -62,7 +62,7 @@
                   (into (subvec vector 0 index-to-exclude)
                         (subvec vector (inc index-to-exclude)))))]
       (let [[namespace name guid]
-            ( (juxt fact/namespace fact/name fact/guid)
+            ((juxt fact/namespace fact/name fact/guid)
               fact-function)
 
             new-namespace-facts
@@ -128,12 +128,15 @@
      (finally
       (reset! global current-compendium#)))))
 
+(def allows-itself-to-be-recorded?
+  (comp not :check-only-at-load-time meta))
+
 (defn record-fact-check! [function]
-  (when (fact/allows-itself-to-be-recorded? function)
+  (when (allows-itself-to-be-recorded? function)
     (swap! global assoc :last-fact-checked function)))
 
 (defn record-fact-existence! [fact-function]
-  (when (and (fact/allows-itself-to-be-recorded? fact-function)
+  (when (and (allows-itself-to-be-recorded? fact-function)
              (config/user-wants-fact-to-be-recorded? fact-function))
     (swap! global #(if-let [previous (previous-version % fact-function)]
                      (remove-from % previous)

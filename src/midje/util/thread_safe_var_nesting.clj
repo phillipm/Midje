@@ -18,7 +18,7 @@
     (.unbindRoot the-var)
     (alter-var-root the-var (fn [_current-value_] new-value))))
 
-(defn alter-one-root [[^clojure.lang.Var the-var new-value]]
+(defn- alter-one-root [[^clojure.lang.Var the-var new-value]]
   (if (bound? the-var)
     (let [old-value (deref the-var)]
       (alter-var-root the-var (fn [_current-value_] new-value))
@@ -28,7 +28,7 @@
       [the-var unbound-marker])))
 
 (defn with-altered-roots* [binding-map f]
-  (let [old-bindings (into {} (for [var+new-value binding-map] (alter-one-root var+new-value)))]
+  (let [old-bindings (doall (map alter-one-root binding-map))]
     (try (f)
       (finally (dorun (map restore-one-root old-bindings))))))
 

@@ -30,10 +30,10 @@
     (assoc (output-counters) :midje-failures value)))
 
 (defn output-counters:inc:midje-passes! []
-  (swap! output-counters-atom (partial merge-with +) {:midje-passes 1}))
+  (swap! output-counters-atom #(update % :midje-passes inc)))
 
 (defn output-counters:inc:midje-failures! []
-  (swap!  output-counters-atom (partial merge-with +) {:midje-failures 1}))
+  (swap! output-counters-atom #(update % :midje-failures inc)))
 
 (defmacro with-isolated-output-counters [& body]
   `(let [original-value# (output-counters)]

@@ -22,13 +22,12 @@
             [such.shorthand :refer [not-empty?]]
             [such.immigration :as immigrate]))
 
-(fact-data/make-getters *ns* "fact-")
-
 (when (doc/appropriate?)
   (immigrate/import-vars [midje.doc midje-repl])
   (doc/repl-notice))
 
 (when-not (ns-resolve 'user '=>) ; when not already `use`d.
+  (immigrate/import-prefixed-vars midje.data.fact fact-)
   (immigrate/import-all-vars midje.sweet))
 
 

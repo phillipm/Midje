@@ -14,11 +14,16 @@
 
 (def ^{:dynamic true} *fact-context* [])
 
+(defn- best-description [fact]
+  (or (fact/description fact)
+      (fact/name fact)
+      nil))
+
 (defn descriptions
   ([]
-     (vec (map fact/best-description *fact-context*)))
+   (vec (map best-description *fact-context*)))
   ([suffix]
-     (conj (descriptions) suffix)))
+   (conj (descriptions) suffix)))
 
 (defmacro in-new-fact [fact & body]
   `(binding [*fact-context* (conj *fact-context* ~fact)]
