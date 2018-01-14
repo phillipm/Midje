@@ -4,25 +4,17 @@
             [clojure.set :refer [superset?]]
             [clojure.zip :as zip]))
 
-(declare -node?
-         basename
-         current-file-name
-         replace-loc-line
-         skip-to-rightmost-leaf)
-
 (def ^:private fallback-line-number (atom (Integer. 0)))
 
 ;; COMPILE-TIME POSITIONS.
 ;; For annotating forms with information retrieved at runtime.
 ;; For reporting syntax errors
 
-(declare line-number-for)
-
-(defn compile-time-fallback-position []
-  (list (current-file-name) @fallback-line-number))
-
 (defn- this-filename []
   (.getFileName ^StackTraceElement (second (.getStackTrace (Throwable.)))))
+
+(defn- basename [string]
+  (last (string/split string #"/")))
 
 (defn current-file-name []
   ;; clojure.test sometimes runs with *file* bound to #"NO_SOURCE.*".
@@ -34,8 +26,18 @@
     (basename *file*)
     (this-filename)))
 
+(defn compile-time-fallback-position []
+  (list (current-file-name) @fallback-line-number))
+
 (defn form-position [form]
   (list (current-file-name) (:line (meta form))))
+
+(defn- node? [form]
+  (-> form
+      meta
+      keys
+      set
+      (superset? #{:zip/make-node :zip/children :zip/branch?})))
 
 (defn line-number-for [form]
   "Return the best guess for what line given form is on."
@@ -49,7 +51,7 @@
         best-lineish (some-fn left-lineish
                               right-lineish
                               #(some-> % (previous-lineish) (inc)))
-        loc (if (-node? form)
+        loc (if (node? form)
               form
               (zip/seq-zip form))]
     (if-let [lineish (best-lineish loc)]
@@ -61,6 +63,22 @@
 
 ;; RUNTIME POSITIONS
 ;; These are positions that determine the file or line at runtime.
+
+(defn- node-meta [loc] (-> loc zip/node meta))
+(defn- replace-loc-line [loc loc-with-line]
+  (let [transferred-meta (if (contains? (node-meta loc-with-line) :line)
+                           (assoc (node-meta loc) :line (:line (node-meta loc-with-line)))
+                           (dissoc (node-meta loc) :line))]
+    (zip/replace loc (with-meta (zip/node loc) transferred-meta))))
+
+(defn- skip-to-rightmost-leaf
+  "When positioned at leftmost position of branch, move to the end form.
+   In a tree, that's the rightmost leaf."
+  [loc]
+  (let [end-form (zip/rightmost loc)]
+    (if (zip/branch? end-form)
+      (recur (zip/down end-form))
+      end-form)))
 
 (defn form-with-copied-line-numbers [line-number-source form]
   (loop [loc (zip/seq-zip form)
@@ -104,31 +122,3 @@
 
         :else
         (vary-meta form assoc :line (:line (meta number-source)))))
-
-;; PRIVATE MEMBERS
-
-(defn -node? [form]
-  (-> form
-      (meta)
-      (keys)
-      (set)
-      (superset? #{:zip/make-node :zip/children :zip/branch?})))
-
-(defn- basename [string]
-  (last (string/split string #"/")))
-
-(defn- replace-loc-line [loc loc-with-line]
-  (let [m (fn [loc] (meta (zip/node loc)))
-        transferred-meta (if (contains? (m loc-with-line) :line )
-                           (assoc (m loc) :line (:line (m loc-with-line)))
-                           (dissoc (m loc) :line ))]
-    (zip/replace loc (with-meta (zip/node loc) transferred-meta))))
-
-(defn- skip-to-rightmost-leaf
-  "When positioned at leftmost position of branch, move to the end form.
-   In a tree, that's the rightmost leaf."
-  [loc]
-  (let [end-form (zip/rightmost loc)]
-    (if (zip/branch? end-form)
-      (recur (zip/down end-form))
-      end-form)))

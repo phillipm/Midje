@@ -3,7 +3,7 @@
             [midje.parsing.util.recognizing :refer [start-of-checking-arrow-sequence?]]
             [midje.sweet :refer :all]
             [midje.test-util :refer :all]
-            [pointer.core :refer :all]))
+            [pointer.core :refer :all :as core]))
 
 (defn this-file [line-number]
   ["t_core.clj" line-number])
@@ -199,8 +199,8 @@
       (provided (current-file-name) => ..current-file-name..))
 
 
-(facts "-node? returns true for zippers."
-       (-node? (-> '(foo :bar :baz) zip/seq-zip)) => true
-       (-node? (-> '(foo :bar :baz) zip/seq-zip zip/down)) => true
-       (-node? (-> '(foo :bar :baz) zip/seq-zip zip/down zip/right)) => true
-       (-node? '(foo :bar :baz)) => false)
+(facts "node? returns true for zippers."
+       (#'core/node? (-> '(foo :bar :baz) zip/seq-zip)) => true
+       (#'core/node? (-> '(foo :bar :baz) zip/seq-zip zip/down)) => true
+       (#'core/node? (-> '(foo :bar :baz) zip/seq-zip zip/down zip/right)) => true
+       (#'core/node? '(foo :bar :baz)) => false)
