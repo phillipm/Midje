@@ -3,7 +3,9 @@
   (:require [midje.data.metaconstant :as data]))
 
 (defn predefine-metaconstants-from-form [form]
-  (let [metaconstant-symbols (set (filter data/metaconstant-symbol? (tree-seq coll? seq form)))]
+  (let [foo (filter data/metaconstant-symbol? (tree-seq coll? seq form))
+        metaconstant-symbols (set foo)]
+    (println (count foo) " \t " (count metaconstant-symbols))
     (doseq [symbol metaconstant-symbols]
       (intern *ns* symbol (data/metaconstant symbol {} nil)))
     metaconstant-symbols))

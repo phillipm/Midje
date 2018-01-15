@@ -14,10 +14,14 @@
                  [org.tcrawley/dynapath "1.0.0"]
                  [org.clojure/tools.namespace "0.2.11"]
                  [flare "0.2.9" :exclusions [org.clojure/clojure]]
+                 [com.clojure-goes-fast/clj-async-profiler "0.1.0"]
                  [slingshot "0.12.2"]
                  [mvxcvi/puget "1.0.2" :exclusions [org.clojure/clojure]]]
-  :profiles {:dev {:dependencies [[prismatic/plumbing "0.5.5"]]
+  :profiles {:dev {:dependencies [[prismatic/plumbing "0.5.5"]
+                                  ]
                    :plugins [[lein-midje "3.2.1"]
+
+                 [lein-jdk-tools "0.1.1"]
                              [lein-ancient "0.6.14" :exclusions [com.fasterxml.jackson.core/jackson-databind
                                                                  com.fasterxml.jackson.core/jackson-core]]]}
              :test-libs {:dependencies [[prismatic/plumbing "0.5.5"]]}

@@ -13,10 +13,11 @@
 (defn- this-filename []
   (.getFileName ^StackTraceElement (second (.getStackTrace (Throwable.)))))
 
-(defn- basename [string]
-  (last (string/split string #"/")))
+(defn- basename [filename]
+  (last (string/split filename #"/")))
 
 (defn current-file-name []
+  ;; TODO PLM perf: 126 msec -> 115 msec on 1000 loop of fact
   ;; clojure.test sometimes runs with *file* bound to #"NO_SOURCE.*".
   ;; This corrects that by looking up the stack. Note that it
   ;; produces a reasonable result for the repl, because the stack

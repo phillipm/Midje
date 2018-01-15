@@ -56,6 +56,7 @@
 
 
   (remove-from [this fact-function]
+    ;; TODO PLM perf: 15% 1352 -> 1106 on 10k iter
     (letfn [(vector-remove [vector target]
               (let [index-to-exclude (.indexOf ^clojure.lang.PersistentVector vector target)]
                   (assert (not (neg? index-to-exclude)))
