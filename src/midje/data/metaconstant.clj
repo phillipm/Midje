@@ -12,20 +12,20 @@
 (def ^{:private true} formats {"..." #"^(\.+)([^.]+)(\.+)$"
                                "---" #"^(-+)(.+?)(-+)$"})
 
+(defn- variant-and-body [variant form]
+  (when-let [[_ _ body _] (re-matches (formats variant) (name form))]
+    [variant body]))
+
 (defn- evaluate-comparison-potential [x]
-  (letfn [(variant-and-body [variant]
-            (if-let [[_ _ body _] (re-matches (formats variant) (name x))]
-              [variant body]))]
-    (and (instance? clojure.lang.Named x)
-         (or (variant-and-body "...")
-             (variant-and-body "---")))))
+  (and (instance? clojure.lang.Named x)
+       (or (variant-and-body "..." x)
+           (variant-and-body "---" x))))
 
 (defn metaconstant-symbol? [x]
   (boolean (and (symbol? x) (evaluate-comparison-potential x))))
 
-(defn- name-for-comparison
-  [x]
-  (if-let [[variant body] (evaluate-comparison-potential x)]
+(defn- name-for-comparison [x]
+  (when-let [[variant body] (evaluate-comparison-potential x)]
     (str variant body variant)))
 
 (defn- report-error [top-line]
