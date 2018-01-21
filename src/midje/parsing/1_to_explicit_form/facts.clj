@@ -163,9 +163,10 @@
 
 ;;; Metadata handling
 
-(defn add-metadata [expanded-body metadata]
-  `(with-meta (fn [] ~expanded-body) (merge ~metadata
-                                            {:midje/top-level-fact? ~(working-on-top-level-fact?)})))
+(defn- add-metadata [expanded-body metadata]
+  `(with-meta (fn [] ~expanded-body) ~(assoc metadata
+                                             :midje/top-level-fact?
+                                             (working-on-top-level-fact?))))
 
 ;;; Load-time processing
 
