@@ -187,7 +187,6 @@
           (run-after-creation [function-form]
             `(fact-checking/creation-time-check ~function-form))]
 
-    (predefine-metaconstants-from-form function-form)
     (-> function-form
         wrap-with-creation-time-fact-recording
         run-after-creation)))
@@ -196,6 +195,7 @@
   (given-possible-fact-nesting
    (-> forms
        expand-fact-body
+       predefine-metaconstants-from-form
        (add-metadata metadata)
        wrap-with-creation-time-code)))
 

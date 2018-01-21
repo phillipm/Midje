@@ -12,8 +12,9 @@
     (walk root)))
 
 (defn predefine-metaconstants-from-form [form]
-  (let [metaconstant-symbols (nested-tree-filter coll? data/metaconstant-symbol? form)]
+  (let [metaconstant-symbols (nested-tree-filter
+                               coll? data/metaconstant-symbol? form)]
     (doseq [symbol metaconstant-symbols]
-      (intern *ns* symbol (data/metaconstant symbol {} nil)))
-    metaconstant-symbols))
+      (intern *ns* symbol (data/metaconstant symbol {} nil))))
+  form)
 
